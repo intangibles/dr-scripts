@@ -24,7 +24,7 @@ module DRCA
 
     loop do
       pause 5 while mana <= amount
-      harness_mana(amount) if harness
+      harness_mana([amount]) if harness
       break if success.include?(DRC.bput("infuse om #{amount}", success, failure))
       pause 0.5
       waitrt?
@@ -32,9 +32,12 @@ module DRCA
   end
 
   def harness_mana(amount)
-    DRC.bput("harness #{amount}", 'You tap into', 'Strain though you may')
-    pause 0.5
-    waitrt?
+    amount.each do |mana|
+      result = DRC.bput("harness #{mana}", 'You tap into', 'Strain though you may')
+      pause 0.5
+      waitrt?
+      break if result =~ /Strain though you may/
+    end
   end
 
   def activate_khri?(kneel, ability)
@@ -53,7 +56,8 @@ module DRCA
 
     DRC.bput('prep symb', 'You recall the exact details of the', 'But you\'ve already prepared') if symbiosis
 
-    case DRC.bput("#{command} #{abbrev} #{mana}", get_data('spells').prep_messages)
+    match = DRC.bput("#{command} #{abbrev} #{mana}", get_data('spells').prep_messages)
+    case match
     when 'Your desire to prepare this offensive spell suddenly slips away'
       pause 1
       return prepare?(abbrev, mana, symbiosis, command)
@@ -62,11 +66,11 @@ module DRCA
       return false
     end
 
-    true
+    match
   end
 
-  def ritual(spell)
-    DRCT.retreat
+  def ritual(spell, ignored_npcs)
+    DRCT.retreat(ignored_npcs) unless spell['skip_retreat']
     DRC.release_invisibility
     DRC.bput('stance set 100 0 80', 'Setting your')
 
@@ -75,10 +79,11 @@ module DRCA
 
     invoke(spell['focus'], nil)
     stow_focus(spell['focus'], spell['worn_focus'], spell['tied_focus'])
-    DRCT.retreat
+    DRCT.retreat(ignored_npcs) unless spell['skip_retreat']
+
     waitcastrt?
     return unless cast?(spell['cast'], spell['symbiosis'], spell['before'], spell['after'])
-    DRCT.retreat
+    DRCT.retreat(ignored_npcs) unless spell['skip_retreat']
   end
 
   def cast?(cast_command = 'cast', symbiosis = false, before = [], after = [])
@@ -90,8 +95,6 @@ module DRCA
     case DRC.bput(cast_command || 'cast', get_data('spells').cast_messages)
     when /^Your target pattern dissipates/, /^You can't cast that at yourself/, /^You need to specify a body part to consume/
       fput('release spell')
-    when /^At the ritual's peak, your prophetic connection blooms a thousand-fold/
-      Flags.add('rtr-expire', get_data('spells').spell_data['Read the Ripples']['expire'])
     end
     waitrt?
 
@@ -103,7 +106,7 @@ module DRCA
     after.each { |action| DRC.bput(action['message'], action['matches']) }
 
     if symbiosis && Flags['spell-fail']
-      bput('release symbiosis', 'You release', 'But you haven\'t prepared')
+      DRC.bput('release symbiosis', 'You release', 'But you haven\'t prepared')
     end
 
     !Flags['spell-fail']
@@ -135,7 +138,11 @@ module DRCA
     if worn
       DRC.bput("wear my #{focus}", 'You attach', 'You slide', 'You are already wearing', 'You hang', 'You sling', 'You put', 'You place')
     elsif tied
-      DRC.bput("tie my #{focus} to my #{tied}", 'You attach', '[Y|y]ou tie')
+      case DRC.bput("tie my #{focus} to my #{tied}", 'You attach', '[Y|y]ou tie', 'You are a little too busy to be worrying')
+      when 'You are a little too busy to be worrying'
+        DRCT.retreat
+        stow_focus(focus, worn, tied)
+      end
     else
       DRC.bput("stow my #{focus}", 'You put', 'You easily strap your')
     end
@@ -177,7 +184,7 @@ module DRCA
     result = DRC.bput("charge my #{cambrinth} #{mana}", get_data('spells').charge_messages)
     pause
     waitrt?
-    result == 'absorbs all of the energy'
+    result =~ /absorbs? all of the energy/
   end
 
   def release_cyclics
@@ -317,16 +324,21 @@ module DRCA
     return unless data # update_astral_data returns nil on failure
 
     release_cyclics if data['cyclic']
+    DRC.bput('release spell', 'You let your concentration lapse', "You aren't preparing a spell") unless checkprep == 'None'
 
     if data['ritual']
-      ritual(data)
+      ritual(data, settings.ignored_npcs)
       return
     end
 
     return unless prepare?(data['abbrev'], data['mana'], data['symbiosis'])
     prepare_time = Time.now
 
-    find_charge_invoke_stow(settings.cambrinth, settings.stored_cambrinth, settings.cambrinth_cap, settings.dedicated_camb_use, data['cambrinth'])
+    if check_to_harness(settings.use_harness_when_arcana_locked)
+      harness_mana(data['cambrinth'])
+    else
+      find_charge_invoke_stow(settings.cambrinth, settings.stored_cambrinth, settings.cambrinth_cap, settings.dedicated_camb_use, data['cambrinth'])
+    end
 
     if data['prep_time']
       pause 0.1 until checkcastrt.zero? || Time.now - prepare_time >= data['prep_time']
@@ -335,5 +347,13 @@ module DRCA
     end
 
     cast?(data['cast'], data['symbiosis'], data['before'], data['after'])
+  end
+
+  def check_to_harness(should_harness)
+    return false unless should_harness
+    return false if DRSkill.getxp('Attunement') >= DRSkill.getxp('Arcana')
+    return false if DRSkill.getxp('Attunement') >= 30
+
+    true
   end
 end

@@ -1,8 +1,8 @@
 ---
 # See https://github.com/rpherbig/dr-scripts/wiki/YAML-Settings for documentation
 
-
 hometown: Crossing
+training_manager_town_duration:
 
 # Combat settings
 aim_fillers:
@@ -36,6 +36,7 @@ stances:
   - Parry Ability
 stance_override:
 cycle_armors:
+cycle_armors_time: 125
 skinning:
   skin: true
   arrange_all: false
@@ -82,6 +83,7 @@ buff_nonspells:
 dance_actions_stealth:
 thanatology:
 necromancer_healing:
+  wound_level_threshold: 1 # 1 - 8
 zombie:
   make: false
   summon: false
@@ -103,6 +105,7 @@ retreat_threshold:
 use_weak_attacks: false
 loot_bodies: true
 dump_junk: false
+dump_item_count: 9
 use_barb_combos: false
 whirlwind_trainables:
 offensive_spell_mana_threshold: 40
@@ -117,9 +120,9 @@ priority_defense:
 tk_ammo:
 custom_loot_type:
 last_rites: false
-
-
-
+ambush_location: back
+warhorn:
+prayer_mat:
 
 # Hunting settings
 training_manager_hunting_priority: false
@@ -162,6 +165,7 @@ safe_room_empath:
 
 
 # Spellcasting (and Khri) settings
+use_harness_when_arcana_locked: false
 cambrinth: armband
 cambrinth_cap: 32
 stored_cambrinth: false
@@ -318,27 +322,55 @@ forests_to_chop:
 lumber_skip_populated: true
 lumber_buddy_chop_every_room: false
 lumber_buddy_tree_list:
-# MISC
-#- Durian
 # common
-# - Ash #shortbows
-# - Birch #composite
-# - Maple #longbows
-# - Oak #martial
-# rare
-- Cherry #shortbows
-- Ramin #longbows
-- Hickory #Composite
-- Lelori #Composite
+- Ash #shortbows
+- Bamboo # martial
+- Durian # martial
+- Mahogany # martial
+- Mangrove #martial, shortbows
+- Maple #longbows
 - Sandalwood #Composite
-#- Ironwood #martial
-# very rare
-- Bloodwood
-- Copperwood
-- Mistwood
-- Goldwood
-- Azurelle
-- Silverwood
+# rare
+- Adder # Alterations
+- Aformosia # Alterations
+- Albarco # shortbow
+- Alerce # Alterations
+- Avodire # composite
+- Azurelle # longbows
+- Bloodwood # longbows, shortbows
+- Bocote # martial
+- Cherry # longbows
+- Copperwood # longbows
+- Crabwood # martial
+- Darkspine	# martial
+- Diamondwood	# martial
+- Dragonwood # alterations
+- E'erdream # ???
+- Felwood # martial, shortbows, composite
+- Finivire # all bows
+- Glitvire # ???
+- Gloomwood # ???
+- Goldwood # longbows, shortbows
+- Greenheart # martial
+- Hickory # martial, composite
+- Ilomba # Alterations
+- Iroko # Alterations
+- Ironwood #martial
+- Kapok # alterations
+- Lelori #Composite
+- Macawood #alterations
+- Mistwood # longbow, shortbow
+- Osage	# longbows
+- Ramin # longbows
+- Redwood	# alterations
+- Rockwood # martial
+- Rosewood # longbows
+- Shadowbark # ???
+- Silverwood # shortbows, composite bows
+- Smokewood	# alterations
+- Tamarak	# alterations
+- Tamboti	# ???
+- Yew	# Longbows
 lumber_implement: axe
 lumber_use_packet: true
 lumber_while_training: false
@@ -354,22 +386,51 @@ mines_to_mine:
 mining_skip_populated: true
 mining_buddy_mine_every_room: false
 mining_buddy_vein_list:
-# uncommon
+# common
+- Covellite
+- Lead
 - Silver
-# rare
-- Gold
-- Platinum
-- Lumium
-- Niniam
+# alchemy
 - Electrum
+- Kadepa
 - Muracite
-- Darkstone
-# very rare
-- Damite
-- Kertig
-- Haralun
-- Glaes
+- Niello
+- Niniam
+- Orichalcum
+# forging
+- Aldamdin
 - Animite
+- Audrualm
+- Damite
+- Darkstone
+- Glaes
+- Haledroth
+- Haralun
+- Icesteel
+- Indurium
+- Kertig
+- Kiralan
+- Lumium
+- Platinum
+- Quelium
+- Silversteel
+- Telothian
+- Tyrium
+- Vardite
+- Yellow gold
+# engineering
+# common
+# - Obsidian
+# - Quartize
+# rare
+- Anjisis
+- Belzune
+- Blackwater jet
+- Diamondique
+- Felstone
+- Fulginode
+- Senci
+- Xenomite
 mining_ignored_stone_sizes:
 - pebble
 mining_implement: shovel
@@ -395,10 +456,11 @@ lockpick_buffs:
 lockpick_room_id:
 lockpick_ignore_difficulty: false
 
-
-
-
-
+# Bankbot Settings
+bankbot_name:
+bankbot_room_id:
+bankbot_deposit_threshold: 0
+bankbot_enabled: false
 
 # Sell loot settings
 sell_loot_pouch: true
@@ -418,6 +480,8 @@ gear_sets:
 empath_healing:
 saferoom_health_threshold: 0
 
+restock:
+
 osrel_no_harness: false
 osrel_amount:
 
@@ -435,6 +499,7 @@ theurgy_supply_container: backpack
 writing_instrument:
 
 tithe: false
+tithe_almsbox:
 
 cleaning_cloth: chamois cloth
 
@@ -493,6 +558,7 @@ waggle_sets:
 
 health_threshold: 50
 depart_on_death: false
+depart_type: item
 afk_justice_threshold: 4
 quit_on_status_warning: false
 status_monitor_no_window: false
@@ -564,6 +630,70 @@ pumpkin_junk:
 - silver wristcuff
 - cambrinth orb
 - platinum ring
+- cambrinth tart
+- bloodstained fabric
+- amulet
+- figurine
+- tankard
+- green bracelet
+- cambrinth peach
+- cambrinth turnip
+- pouch
+
+grave_junk:
+- flat stone
+- scratched jawbone
+- bone ring
+- round stone
+- pin
+- shell
+- rib
+- finger
+- slug
+- tooth
+- hair
+- feather
+- spleen
+- shin bone
+- spectacles
+- linen
+- parchment
+- grub
+- tail
+- carapace
+- jawbone
+- ratskin
+- earring
+- ribbon
+- deobar
+- decayed skull
+- rock
+- hag
+- cockroach
+- hand-puppet
+- mirror
+- roll
+- earthworms
+- sweater
+- sash
+- gown
+- socks
+- veil
+- blouse
+- wedding
+- bone shards
+- sacrum
+- rune-carved stone
+- glowing fragment
+- gloves
+- intestines
+- spine
+- skull
+- arm
+- foreleg
+- wing
+- leg
+- bone
 
 climbing_target:
 have_climbing_rope: false
@@ -603,3 +733,39 @@ discard_scrolls:
 - Seal Cambrinth
 - Strange Arrow
 
+theurgy_whitelist:
+# Tithe 5 silver at the local almsbox.  Requres tithe: true
+- tithe
+# Study the wall in the Crossing temple.
+- study_wall
+# Meditate at the Crossing guild refectory
+- refectory
+# Carve a prayer bead.
+- carve_bead
+# Find and plant a sirese seed.
+- sirese_seed
+# Take a holy bath, you savage.
+- bathe
+# Pray on a prayer badge.
+- pray_badge
+# Medidate on a carved prayer bead.  Marvel at the special effects.
+- meditate_bead
+# Dance in front of an altar.
+- dance
+# Wave incense at an altar
+- incense
+# Pour wine on an altar.
+- wine
+# Recite the same prayer as everyone else in front of an altar.
+- recite_prayer
+# Clean an altar with holy water.
+- clean_altar
+# Read a prayer parchment in a populated place.
+- embarass_myself
+theurgy_blacklist:
+# On second thought, let's not.
+- embarass_myself
+theurgy_exp_threshold: 0
+theurgy_bead_carving_tool:
+theurgy_use_prayer_mat: false
+theurgy_prayer_mat_room:

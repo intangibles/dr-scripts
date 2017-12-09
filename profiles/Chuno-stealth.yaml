@@ -1,6 +1,8 @@
 ---
 hunting_info:
-- :zone: storm_bulls
+- :zone: 
+  - young_wyverns
+  - young_wyverns
   args:
   - d0
   - stealth
@@ -8,19 +10,25 @@ hunting_info:
   stop_on:
   - Stealth
   before:
-  - set-attack 50 94
+  - go2 
+  - rem
   after:
-  - set-attack 100 94
   - rem
   - safe-room
 
-stance_override:
+gear_sets:
+  standard:
+  - small shield
+  - pugilist armguard
+
+stance_override: 96 100 0 
 cycle_armors:
 training_abilities:
 buff_nonspells:
   barb_buffs:
   - Panther
 ambush: false
+skip_last_kill: false
 use_stealth_attacks: true
 dont_stalk: true
 use_weak_attacks: true
